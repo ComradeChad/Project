@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script src="jquery-3.2.1.js"></script>
   <style>
   html{
     min-height:100%;
@@ -8,8 +9,8 @@
   }
   body{
     min-height:100%;
-    background-color: white;
-        overflow: auto;
+    background-color: #bbccdd;
+        overflow: scroll;
   }
   #wrapper{
     min-height:100%;
@@ -23,6 +24,7 @@
     margin: 2%;
     border: 3px solid white ;
     height: 10%;
+    display: none;
   }
   .btn{
     background-color: #aaffaa;
@@ -69,28 +71,31 @@
     position: auto;
   }
   #drafts{
-    position: auto;
+    position: fixed;
+    right:0;
     background-color: #cccccc;
     width:29%;
-    min-height:100%;
     float: right;
     z-index:1;
-  }
-  #topPadding{
-    background-color: #eeeeee;
-    padding:5px;
-    height:5%;
   }
   #drafts_wrapper{
     padding: 4%;
   }
+  #requirements{
+    background-color: #aaaaaa;
+  }
   #table_container{
     margin:0 auto;
+  }
+  #topPadding{
+    background-color: #eeeeee;
+    padding:5px;
+    height:40px;
   }
   #search{
     background-color: #e2e2e2;
     padding: 5px;
-    height: 5%;
+    height:40px;
   }
   #advanced{
     background-color: #eeeedd;
@@ -112,6 +117,36 @@
   form{
     padding: 5px;
   }
+  #drafts ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  #drafts li{
+    display: inline-block;
+    background-color: #444444;
+    padding: 8px 16px;
+    border-top: 2px solid black;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+  }
+  #drafts li a{
+    text-decoration: none;
+    color: white;
+  }
+  #drafts .active {
+    background-color: #cccccc;
+    color: black;
+  }
+  #drafts .active a{
+    color: black;
+  }
+  .tab-panel{
+    display:none;
+  }
+  .tab-panel.active{
+    display:block;
+  }
   table{
     background-color: #dddddd;
     border-spacing: 0px;
@@ -119,6 +154,7 @@
     empty-cells: show;
     border-collapse: collapse;
     text-align: center;
+    color:black;
   }
   th {
     background-color: #bbbbbb;
@@ -137,7 +173,7 @@
     <h1>(toolbar will be copied from other page)</h1>
     <!-- Drafts Sidebar-->
     <div id="drafts">
-      <div id="topPadding"><h2> My Scheduling Drafts </h2></div>
+      <div id="topPadding"><h2 style="margin: auto;"> My Scheduling Drafts </h2></div>
       <div id="drafts_wrapper">
         <form> View:
           <select name="drafts" class="drafts">
@@ -147,11 +183,14 @@
           <span class="btn" id="addDraft">+ Add New</span>
         </form>
         <br>
+        <!-- TabList panel from Jon Duckett's Javascript & Jquery, 2014 -->
+        <ul class="tab-list">
+          <li class="active"><a class="tab-control" href="#tab-f">Fall</a></li>
+          <li><a class="tab-control" href="#tab-w">Winter</a></li>
+        </ul>
+        <div class="tab-panel active" id="tab-f">
         <table id="fall">
           <tr>
-            <th colspan="8">Fall</th>
-          </tr>
-          <tr>
             <th>Time</th>
             <th id="day">Sun</th>
             <th id="day">Mon</th>
@@ -302,12 +341,10 @@
             <td></td>
           </tr>
         </table>
-        <br><br>
+        </div>
+        <div class="tab-panel" id="tab-w">
         <table id="winter">
           <tr>
-            <th colspan="8">Winter</th>
-          </tr>
-          <tr>
             <th>Time</th>
             <th id="day">Sun</th>
             <th id="day">Mon</th>
@@ -458,12 +495,41 @@
             <td></td>
           </tr>
         </table>
-        <br><br><br><br><br><br><br>
-      </div>
+        </div>
+          <script>
+          /************************
+          FOLLOWING CODE WAS OBTAIEND FROM 'Javascript & Jquery', 2014
+          AUTHOR: Jon Duckett
+          Published by John Wiley  & Sons, Indianapolis, In.
+          **************************/
+
+          $('.tab-list').each(function(){                   // Find lists of tabs
+            var $this = $(this);                            // Store this list
+            var $tab = $this.find('li.active');             // Get the active list item
+            var $link = $tab.find('a');                     // Get link from active tab
+            var $panel = $($link.attr('href'));             // Get active panel
+
+            $this.on('click', '.tab-control', function(e) { // When click on a tab
+              e.preventDefault();                           // Prevent link behavior
+              var $link = $(this),                          // Store the current link
+              id = this.hash;                           // Get href of clicked tab
+
+              if (id && !$link.is('.active')) {             // If not currently active
+                $panel.removeClass('active');               // Make panel inactive
+                $tab.removeClass('active');                 // Make tab inactive
+
+                $panel = $(id).addClass('active');          // Make new panel active
+                $tab = $link.parent().addClass('active');   // Make new tab active
+              }
+            });
+          });
+
+          </script>
+        </div>
     </div>
     <!-- Filters Sidebar-->
     <div id="filters">
-      <div id="topPadding"><h2>Search Filters</h2></div>
+      <div id="topPadding"><h2 style="margin: auto;">Search Filters</h2></div>
       Subject
       <form>
         <select name="subject" size="5" multiple>
@@ -482,7 +548,7 @@
           <option value="2x">2000</option>
           <option value="3x">3000</option>
           <option value="4x">4000</option>
-          <option value="5x">5000</option>
+          <option value="5x">5000</option>F
           <option value="6x">6000</option>
           <option value="7x">7000</option>
           <option value="8x">8000</option>
@@ -506,31 +572,95 @@
         <h2>Degree Requirements</h2>
         <span> <i>Computer Science: Major</i> </span>
         <br><br>
-        <div class="btn_reqs" id="year1">1000 Level</div>
-        <div class="btn_reqs" id="year2">2000 Level</div>
-        <div class="btn_reqs" id="year3">3000 Level</div>
-        <div class="btn_reqs" id="year4">4000 Level</div>
+        <div class="btn_reqs" id="year1">Show 1000 Level</div>
+        <div class="btn_reqs" id="year2">Show 2000 Level</div>
+        <div class="btn_reqs" id="year3">Show 3000 Level</div>
+        <div class="btn_reqs" id="year4">Show 4000 Level</div>
       </div>
+    </div>
     </div>
     <!-- Courses Listings -->
     <div id="courses">
-      <!-- Search Bar-->
+      <!--  Bar-->
       <div id="search">
         <form>
           Search
-          <input name="search" type="text" placeholder="Search by course code, name, or instructor.">
+          <input id="searchBar" type="text"  onkeyup="searchEngine()"
+          placeholder="Search by course code, name, or instructor.">
         </form>
       </div>
       <br>
-      <div class="section"> <p> test </p></div>
-      <div class="section"> <p> test </p></div>
-      <div class="section"> <p> test </p></div>
-      <div class="section"> <p> test </p></div>
-      <div class="section"> <p> test </p></div>
-      <div class="section"> <p> test </p></div>
-      <div class="section"> <p> test </p></div>
-      <div class="section"> <p> test </p></div>
-      <div class="section"> <p> test </p></div>
+
+  <div id="allSections">
+
+      <div class="section">
+        <ul>
+          <li id="comp2140" class="code">COMP 2140</li>
+          <li id="datastrc"class="name">Data structures & Algorithms</li>
+          <li id="drc" class="prof">Dr. C. Hillary</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <ul>
+          <li class="code">COMP1010</li>
+          <li class="name">Introduction to Computer Science</li>
+          <li class="prof">Dr. P. rofessor </li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <ul>
+          <li class="code">MUSC1920</li>
+          <li class="name">Rudiments of Music</li>
+          <li class="prof">A. Csordas</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <ul>
+          <li class="code">FILM1010</li>
+          <li class="name">The Art of Film</li>
+          <li class="prof">C. Mauthe</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <ul>
+          <li class="code">COMP3020</li>
+          <li class="name">Human Computer Interaction I</li>
+          <li class="prof">Dr. Andrea Bunt</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <ul>
+          <li class="code">COMP3490</li>
+          <li class="name">Computer Graphics I</li>
+          <li class="prof">Dr. Niel Bruce</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <ul>
+          <li class="code">ARTS1110</li>
+          <li class="name">Introduction to University</li>
+          <li class="prof">Dr. P. rofessor</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <ul>
+          <li class="code">FAAH1010</li>
+          <li class="name">Introduction to Art History</li>
+          <li class="prof">Dr. A. Artsman</li>
+        </ul>
+      </div>
+
+      </div>
+
+      <script src="searchEngine.js"></script>
+
     </div>
 
   </div>
